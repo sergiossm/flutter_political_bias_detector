@@ -24,7 +24,7 @@ class Chart extends StatelessWidget {
           List<double> values = _initialData;
 
           if (snapshot.data != null) {
-            Map<String, double> preds = snapshot.data.predictions;
+            Map<String, double> preds = snapshot.data.predictions.map((key, value) => MapEntry(key, value / 100));
 
             values.clear();
             values.addAll([

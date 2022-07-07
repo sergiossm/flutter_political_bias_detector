@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 
@@ -27,7 +28,7 @@ class Top6 extends StatelessWidget {
           StreamBuilder<Result>(
               stream: bloc.result,
               builder: (context, snapshot) {
-                LinkedHashMap _results = _buildResults(snapshot.data);
+                Map<String, double> _results = _buildResults(snapshot.data);
 
                 return Responsive(
                   mobile: _Result(
@@ -41,18 +42,27 @@ class Top6 extends StatelessWidget {
     );
   }
 
-  LinkedHashMap _buildResults(Result result) {
-    if (result == null) {
-      return LinkedHashMap.from({});
-    }
+  Map<String, double> _buildResults(Result result) {
+    final Map<String, double> map = {};
+
+    if (result == null) return map;
 
     final tokens = result.text.split(' ');
     final attention = result.attention;
-    final temp = Map.fromIterables(tokens, attention);
 
-    var sortedKeys = temp.keys.toList(growable: false)..sort((k1, k2) => temp[k2].compareTo(temp[k1]));
-    LinkedHashMap sortedMap = LinkedHashMap.fromIterable(sortedKeys, key: (k) => k, value: (k) => temp[k]);
-    return sortedMap;
+    final List<double> attentionAux = List.from(attention);
+    final List<String> tokensAux = List.from(tokens);
+    double top;
+    int index;
+    for (var i = 0; i < 6; i++) {
+      top = attentionAux.reduce(max);
+      index = attentionAux.indexWhere((element) => element == top);
+      map[tokensAux.elementAt(index)] = top;
+      attentionAux.removeAt(index);
+      tokensAux.removeAt(index);
+    }
+
+    return map;
   }
 }
 
@@ -64,7 +74,7 @@ class _Result extends StatelessWidget {
     this.childAspectRatio = 1,
   }) : super(key: key);
 
-  final LinkedHashMap results;
+  final Map<String, double> results;
   final int crossAxisCount;
   final double childAspectRatio;
 

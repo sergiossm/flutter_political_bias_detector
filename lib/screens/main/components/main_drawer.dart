@@ -39,7 +39,7 @@ class MainDrawer extends StatelessWidget {
           ),
           DrawerListTile(
             title: "Dataset",
-            svgSrc: "assets/icons/model.svg",
+            svgSrc: "assets/icons/dataset.svg",
             selected: currentIndex == 2,
             press: () {
               if (!Responsive.isDesktop(context)) Navigator.of(context).pop();
